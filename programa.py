@@ -45,8 +45,7 @@ while 1:
 		print("Você precisa digitar ou 0 ou 1!")
 		time.sleep(3)
 		clear()
-
-		
-
-
+#PEGAR OS DADOS DO JOGADOR
+print("Bem vindo ao Kanto do Insper, o mundo de Inspermon!")
+time.sleep()
 
