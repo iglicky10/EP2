@@ -34,13 +34,18 @@ while 1:
 	elif start == "1":
 		clear()
 		print("Vamos começar!")
+		clear()
+		time.sleep(3)
 		for i in range(5,0,-1):
 			print(i)
 			time.sleep(1)
-		clear()
+			clear()
 		break
 	else:
 		print("Você precisa digitar ou 0 ou 1!")
 		time.sleep(3)
 		clear()
+		
+
+
 
