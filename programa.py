@@ -47,5 +47,32 @@ while 1:
 		clear()
 #PEGAR OS DADOS DO JOGADOR
 print("Bem vindo ao Kanto do Insper, o mundo de Inspermon!")
-time.sleep()
-
+time.sleep(5)
+clear()
+print("Meu nome é professor Samuel Carvalho e eu serei seu guia nessa jornada.")
+time.sleep(5)
+clear()
+print("Primeiramente vamos precisar saber algumas coisas sobre você.")
+time.sleep(5)
+clear()
+while 1:
+	name = input("Digite seu nome: ")
+	clear()
+	sex = int(input("Você é menino (0) ou menina (1)?" ))
+	if sex == 0:
+		sex = "Você é um menino"
+	elif sex == 1:
+		sex = "Você é uma menina"
+	else:
+		print("Como você não digitou nem 0 nem 1, você será considerado asexuado")
+		time.sleep(5)
+		sex = "Você é asexuado"
+	clear()
+	print("Nome: ",name)
+	print(sex)
+	entrevistaConfirma = input("As informações estão corretas? SIM (s) | NÃO (n)")
+	clear()
+	if entrevistaConfirma == "S" or entrevistaConfirma=="s":
+		print("Muito bem! Você será levado para o lado de fora para começar sua Aventura!")
+		time.sleep(5)
+		break
