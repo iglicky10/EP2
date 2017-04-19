@@ -1,1 +1,1 @@
-{"Vegs": {"name": "Rafael", "sex": "Voc\u00ea \u00e9 um menino", "alunos": {"Veguinho": "alunoComputacao"}}}
+{"Vegs": {"name": "Rafael", "sex": "Voc\u00ea \u00e9 um menino", "alunos": {"Veguinho": {"tipo": "alunoComputacao", "lvl": 1}}}, "Ju": {"name": "Kaki", "sex": "Voc\u00ea \u00e9 um menino", "alunos": {"Maja": {"tipo": "alunoMecatronica", "lvl": 1}}}, "Loba": {"name": "Fando", "sex": "Voc\u00ea \u00e9 um menino", "alunos": {"Koko Loko": {"tipo": "alunoMecanica", "lvl": 1}}}}

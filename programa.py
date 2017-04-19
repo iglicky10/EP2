@@ -5,6 +5,7 @@ import time
 import sys
 import json
 import random
+from random import randint
 
 clear = lambda: os.system('cls')
 clear()
@@ -18,7 +19,7 @@ class Alunos:
 		self.nome = nome
 		self.lvl = lvl
 
-def batalhar(player,oponente,nomeSeuAluno):
+def batalhar(player,playerLVL,oponente,nomeSeuAluno):
 	if player == "alunoMecatronica":
 		player = alunoMecatronica
 	elif player == "alunoMecanica":
@@ -55,21 +56,30 @@ def batalhar(player,oponente,nomeSeuAluno):
 
 		elif atacarChoice == "a" or atacarChoice == "A":
 			clear()
-			vidaOponente = vidaOponente - (player.ataque - oponente.defesa)
-			suaVida = suaVida - (oponente.ataque - player.defesa)
-			print("{} atacou e inflingiu {} de dano!".format(nomeSeuAluno,player.ataque-oponente.defesa))
+			danoSeuAluno = abs((player.ataque + randint(-5,5) + randint(0,playerLVL)) -oponente.defesa)
+			danoOponente = abs((oponente.ataque + randint (-5,5) + randint(0,oponente.lvl)) -player.defesa)
+			vidaOponente = vidaOponente - danoSeuAluno
+			suaVida = suaVida - danoOponente
+			print("{} atacou e inflingiu {} de dano!".format(nomeSeuAluno,danoSeuAluno))
 			time.sleep(2)
-			print("O {} inimigo atacou e inflingiu {} de dano!".format(oponente.nome,oponente.ataque-player.defesa))
+			print("O {} inimigo atacou e inflingiu {} de dano!".format(oponente.nome,danoOponente))
 			time.sleep(3)
 
 		else:
 			print("Você precisa digitar (a) para atacar ou (f) para fugir!")
 
-	if suaVida <= 0:
+	if suaVida <= 0 and vidaOponente <=0:
+		print("Foi um empate!")
+		time.sleep(3)
+		print("Ambos saíram feridos da batalha...")
+		time.sleep(3)
+		return
+
+	elif suaVida <= 0:
 		clear()
 		print("Você perdeu a batalha...")
 		time.sleep(1)
-		print("Mas não se preocupe, como esse jogo foi feito para se divertir, o seu Aluno já se recuperou e está pronto para continuar com você em sua jornada!")
+		print("Mas não se preocupe! Como esse jogo foi feito para se divertir, o seu Aluno já se recuperou e está pronto para continuar com você em sua jornada!")
 		time.sleep(5)
 		return
 
@@ -257,11 +267,16 @@ if loadSaveOption == "n" or loadSaveOption == "N":
 			alunoMecatronica.nome = input("Digite qual será o nome do seu Aluno inicial: ")
 			alunoInicial = alunoMecatronica
 			saveAtual["alunos"] = {}
-			saveAtual["alunos"] = {alunoMecatronica.nome:"alunoMecatronica"}
+			saveAtual["alunos"] = {alunoMecatronica.nome:{"tipo":"alunoMecatronica","lvl":1}}
 			saveGeneral[saveName] = saveAtual
 			###COLOCA O ALUNO COM NOME NO SAVE
 			with open("save.json","w") as arquivoSai:
 				json.dump(saveGeneral,arquivoSai)
+			clear()
+			print("Muito bem! Agora você já pode ir passear para batalhar contra outros alunos!")
+			time.sleep(4)
+			print("Boa sorte!")
+			time.sleep(2)
 			break
 
 		elif alunoInicialChoose == "1":
@@ -274,11 +289,16 @@ if loadSaveOption == "n" or loadSaveOption == "N":
 			alunoMecanica.nome = input("Digite qual será o nome do seu Aluno inicial: ")
 			alunoInicial = alunoMecanica
 			saveAtual["alunos"] = {}
-			saveAtual["alunos"] = {alunoMecanica.nome:"alunoMecanica"}
+			saveAtual["alunos"] = {alunoMecanica.nome:{"tipo":"alunoMecanica","lvl":1}}
 			saveGeneral[saveName] = saveAtual
 			###COLOCA O ALUNO COM NOME NO SAVE
 			with open("save.json","w") as arquivoSai:
 				json.dump(saveGeneral,arquivoSai)
+			clear()
+			print("Muito bem! Agora você já pode ir passear para batalhar contra outros alunos!")
+			time.sleep(4)
+			print("Boa sorte!")
+			time.sleep(2)
 			break
 
 		elif alunoInicialChoose == "2":
@@ -291,11 +311,16 @@ if loadSaveOption == "n" or loadSaveOption == "N":
 			alunoComputacao.nome = input("Digite qual será o nome do seu Aluno inicial: ")
 			alunoInicial = alunoComputacao
 			saveAtual["alunos"] = {}
-			saveAtual["alunos"] = {alunoComputacao.nome:"alunoComputacao"}
+			saveAtual["alunos"] = {alunoComputacao.nome:{"tipo":"alunoComputacao","lvl":1}}
 			saveGeneral[saveName] = saveAtual
 			###COLOCA O ALUNO COM NOME NO SAVE
 			with open("save.json","w") as arquivoSai:
 				json.dump(saveGeneral,arquivoSai)
+			clear()
+			print("Muito bem! Agora você já pode ir passear para batalhar contra outros alunos!")
+			time.sleep(4)
+			print("Boa sorte!")
+			time.sleep(2)
 			break
 		else:
 			print("Você precisa escolher qual Aluno inicial você quer!")
@@ -338,7 +363,7 @@ while 1: #LOOP INFINITO PRINCIPAL DO JOGO
 				clear()
 				oponente = random.choice(listaNPC)
 				#CHAMA A FUNÇÃO BATALHAR
-				batalhar(saveAtual["alunos"][alunoAtual],oponente,alunoAtual)
+				batalhar(saveAtual["alunos"][alunoAtual]["tipo"],saveAtual["alunos"][alunoAtual]["lvl"],oponente,alunoAtual)
 
 			else:
 				print("Você precisa digitar (p) para passear ou (d) para dormir!")
@@ -352,8 +377,9 @@ while 1: #LOOP INFINITO PRINCIPAL DO JOGO
 		continuarOuSair = input("Você quer sair do jogo? Para sair digite (s). Para continuar aperte ENTER")
 		if continuarOuSair == "s" or continuarOuSair == "S":
 			clear()
-			print("Até a próxima!")
+			print("Até a próxima, {}!".format(saveAtual["name"]))
 			time.sleep(2)
+			clear()
 			exit()
 
 
