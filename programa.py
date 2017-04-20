@@ -130,6 +130,8 @@ logo = """
 	  batalha contra criaturas fantásticas pelo caminho (também conhecidas como alunos do Insper)!
 	  Siga as instruções para jogar.
 	  *** JOGUE COM O O CONSOLE EM TELA CHEIA ***
+
+	  Jogo produzido por Rafael e Ariel - Engenharia Turma C - Insper 2017/1
 """
 #INICIA O JOGO
 while 1:
@@ -216,7 +218,7 @@ while 1:
 			clear()
 			if entrevistaConfirma == "S" or entrevistaConfirma=="s":
 				saveName = input("Escolha um nome para seu novo save: ")
-				saveGeneral[saveName] = {"name":name,"sex":sex,"alunos":[]}
+				saveGeneral[saveName] = {"name":name,"sex":sex,"alunos":{},"alunodex":[]}
 				saveAtual = saveGeneral[saveName]
 				with open("save.json","w") as arquivoSai:
 					json.dump(saveGeneral,arquivoSai)
@@ -343,7 +345,7 @@ while 1: #LOOP INFINITO PRINCIPAL DO JOGO
 		if alunoAtual in saveAtual["alunos"]:	
 			clear()
 			print("Passeando com {}".format(alunoAtual))
-			passearOuDormir = input("Você quer passear (p) ou dormir (d) ? ") ###PASSEAR OU DORMIR
+			passearOuDormir = input("Você quer passear (p), dormir (d) ou ver a Alunodex (a) ? ") ###PASSEAR OU DORMIR
 			if passearOuDormir == "d" or passearOuDormir == "D":
 				break
 
@@ -361,9 +363,26 @@ while 1: #LOOP INFINITO PRINCIPAL DO JOGO
 				print("Passeando...")
 				time.sleep(1)
 				clear()
-				oponente = random.choice(listaNPC)
+				indexDoOponente = randint(0,len(listaNPC)-1)
+				oponente = listaNPC[indexDoOponente]
 				#CHAMA A FUNÇÃO BATALHAR
 				batalhar(saveAtual["alunos"][alunoAtual]["tipo"],saveAtual["alunos"][alunoAtual]["lvl"],oponente,alunoAtual)
+				clear()
+				#CHAMA A FUNÇÃO CHECK DA ALUNODEX
+				#saveAtual["alunodex"] = alunodexCheck(saveAtual["alunodex"],listaNPC,indexDoOponente)
+				if str(indexDoOponente) not in saveAtual["alunodex"]:
+					saveAtual["alunodex"].append(str(indexDoOponente))
+					print("{} foi adicionado a sua Alunodex!".format(listaNPC[indexDoOponente].nome))
+					time.sleep(3)
+				with open("save.json","w") as arquivoSai:
+					json.dump(saveGeneral,arquivoSai)
+
+			elif passearOuDormir == "a" or passearOuDormir == "A":
+				clear()
+				print("Estes são os tipos de aluno que você já econtrou por ai: ") 
+				for k in saveAtual["alunodex"]:
+					print(listaNPC[int(k)].nome)
+				time.sleep(6)
 
 			else:
 				print("Você precisa digitar (p) para passear ou (d) para dormir!")
