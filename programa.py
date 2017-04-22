@@ -12,14 +12,15 @@ clear()
 
 #CLASSES E FUNÇÕES
 class Alunos:
-	def __init__(self,nome,ataque,defesa,vida,lvl):
+	def __init__(self,nome,ataque,defesa,vida,lvl,xp):
 		self.ataque = ataque
 		self.defesa = defesa
 		self.vida = vida
 		self.nome = nome
 		self.lvl = lvl
+		self.xp = xp
 
-def batalhar(player,playerLVL,oponente,nomeSeuAluno):
+def batalhar(player,playerLVL,oponente,nomeSeuAluno,playerXP):
 	if player == "alunoMecatronica":
 		player = alunoMecatronica
 	elif player == "alunoMecanica":
@@ -30,18 +31,18 @@ def batalhar(player,playerLVL,oponente,nomeSeuAluno):
 	print("Você encontrou um {} ! O level dele é: {}".format(oponente.nome,oponente.lvl))
 	time.sleep(4)
 
-	if oponente.lvl > player.lvl:
+	if oponente.lvl > playerLVL:
 		print("ATENÇÃO! O LEVEL DO ADVERSÁRIO É MAIOR DO QUE O SEU!")
 		time.sleep(2)
 
 	vidaOponente = oponente.vida
-	suaVida = player.vida
+	suaVida = int(player.vida*(1+(0.5*playerLVL)-0.5))
 
 	print("Prepare-se para a batalha!")
 	time.sleep(2)
 
 	#LOOP DA BATALHA
-	while suaVida and vidaOponente > 0:
+	while suaVida > 0 and vidaOponente > 0:
 		clear()
 		print("Pontos de vida de {}: {}".format(nomeSeuAluno,suaVida))
 		print("Pontos de vida do {}: {}".format(oponente.nome,vidaOponente))
@@ -50,14 +51,24 @@ def batalhar(player,playerLVL,oponente,nomeSeuAluno):
 
 		if atacarChoice == "f" or atacarChoice == "F":
 			clear()
-			print("Você fugiu da batalha com êxito!")
-			time.sleep(2)
-			return
+			chanceDeFugir = [0]*oponente.lvl + [1]*2*playerLVL
+			randomFugir = random.choice(chanceDeFugir)
+			if randomFugir == 1:
+				print("Você fugiu da batalha com êxito!")
+				time.sleep(2)
+				return playerXP, playerLVL
+			elif randomFugir == 0:
+				print("Você não conseguiu fugir da batalha dessa vez! Tente de novo no próximo turno...")
+				time.sleep(3)
+				danoOponente = abs(int((oponente.ataque + randint (-5,5) + randint(0,oponente.lvl)) -player.defesa*(1+(0.5*playerLVL)-0.5)))
+				suaVida = suaVida - danoOponente
+				print("O {} inimigo atacou e inflingiu {} de dano!".format(oponente.nome,danoOponente))
+				time.sleep(3)
 
 		elif atacarChoice == "a" or atacarChoice == "A":
 			clear()
-			danoSeuAluno = abs((player.ataque + randint(-5,5) + randint(0,playerLVL)) -oponente.defesa)
-			danoOponente = abs((oponente.ataque + randint (-5,5) + randint(0,oponente.lvl)) -player.defesa)
+			danoSeuAluno = abs(int((player.ataque*(1+(0.5*playerLVL)-0.5) + randint(-5,5) + randint(0,playerLVL)) -oponente.defesa))
+			danoOponente = abs(int((oponente.ataque + randint (-5,5) + randint(0,oponente.lvl)) -player.defesa*(1+(0.5*playerLVL)-0.5)))
 			vidaOponente = vidaOponente - danoSeuAluno
 			suaVida = suaVida - danoOponente
 			print("{} atacou e inflingiu {} de dano!".format(nomeSeuAluno,danoSeuAluno))
@@ -67,44 +78,84 @@ def batalhar(player,playerLVL,oponente,nomeSeuAluno):
 
 		else:
 			print("Você precisa digitar (a) para atacar ou (f) para fugir!")
+			time.sleep(2)
 
 	if suaVida <= 0 and vidaOponente <=0:
+		clear()
 		print("Foi um empate!")
 		time.sleep(3)
 		print("Ambos saíram feridos da batalha...")
 		time.sleep(3)
-		return
+		print("Continue jogando para treinar seu aluno!")
+		time.sleep(3)
+		return playerXP, playerLVL
 
 	elif suaVida <= 0:
 		clear()
 		print("Você perdeu a batalha...")
-		time.sleep(1)
+		time.sleep(2)
 		print("Mas não se preocupe! Como esse jogo foi feito para se divertir, o seu Aluno já se recuperou e está pronto para continuar com você em sua jornada!")
 		time.sleep(5)
-		return
+		print("Continue jogando para treinar seu aluno!")
+		time.sleep(3)
+		return playerXP, playerLVL
 
 	elif vidaOponente <= 0: 
+		xpGanha = oponente.lvl*randint(10,15)
+		playerXPnova = playerXP + xpGanha
 		clear()
 		print("Parabéns! Você venceu a batalha!")
 		time.sleep(2)
+		print("{} ganhou {} de xp por vencer a batalha!".format(nomeSeuAluno,xpGanha))
+		time.sleep(2)
+		print("XP atual de {}: {}".format(nomeSeuAluno,playerXPnova))
+		time.sleep(3)
+
+		if playerXPnova >= 50 and playerXP < 50:
+			clear()
+			print("{} passou para o nível 2 e ficou mais forte!".format(nomeSeuAluno))
+			time.sleep(3)
+			playerLVLNovo = playerLVL + 1
+
+		elif playerXPnova >= 150 and playerXP < 150:
+			clear()
+			print("{} passou para o nível 3 e ficou mais forte!".format(nomeSeuAluno))
+			time.sleep(3)
+			playerLVLNovo = playerLVL + 1
+
+		elif playerXPnova >= 400 and playerXP < 400:
+			clear()
+			print("{} passou para o nível 4 e ficou mais forte!".format(nomeSeuAluno))
+			time.sleep(3)
+			playerLVLNovo = playerLVL + 1
+
+		elif playerXPnova >= 1000 and playerXP < 1000:
+			clear()
+			print("{} passou para o nível 5 e ficou mais forte!".format(nomeSeuAluno))
+			time.sleep(3)
+			playerLVLNovo = playerLVL + 1
+
+		else:
+			playerLVLNovo = playerLVL
+
 		print("Continue jogando para treinar seu aluno!")
 		time.sleep(3)
-		return
+		return playerXPnova, playerLVLNovo
 
 
 #DADOS
 ###INICIAIS
-alunoMecatronica = Alunos("Name",10,5,30,1)
-alunoMecanica = Alunos("Name",10,5,30,1)
-alunoComputacao = Alunos("Name",10,5,30,1)
+alunoMecatronica = Alunos("Name",10,5,30,1,0)
+alunoMecanica = Alunos("Name",10,5,30,1,0)
+alunoComputacao = Alunos("Name",10,5,30,1,0)
 ####NPCs
-bixoADM = Alunos("Bixo de ADM",4,3,25,1)
-bixoECONO = Alunos("Bixo de ECONOMIA",7,2,22,1)
-bixoMECATRONICA = Alunos("Bixo de MECATRÔNICA",7,4,25,1)
-bixoMECANICA = Alunos("Bixo de MECÂNICA",9,3,22,1)
-bixoCOMPUTACAO = Alunos("Bixo de COMPUTAÇÃO",6,4,30,1)
-veteranoADM = Alunos("Veterano de ADM",10,7,40,2)
-veteranoECONO = Alunos("Veterano de ECONOMIA",15,4,36,2)
+bixoADM = Alunos("Bixo de ADM",4,3,25,1,0)
+bixoECONO = Alunos("Bixo de ECONOMIA",7,2,22,1,0)
+bixoMECATRONICA = Alunos("Bixo de MECATRÔNICA",7,4,25,1,0)
+bixoMECANICA = Alunos("Bixo de MECÂNICA",9,3,22,1,0)
+bixoCOMPUTACAO = Alunos("Bixo de COMPUTAÇÃO",6,4,30,1,0)
+veteranoADM = Alunos("Veterano de ADM",10,7,40,2,0)
+veteranoECONO = Alunos("Veterano de ECONOMIA",15,4,36,2,0)
 listaNPC = [bixoADM,bixoECONO,bixoMECATRONICA,bixoMECANICA,bixoCOMPUTACAO,veteranoADM,veteranoECONO]
 
 
@@ -131,7 +182,7 @@ logo = """
 	  Siga as instruções para jogar.
 	  *** JOGUE COM O O CONSOLE EM TELA CHEIA ***
 
-	  Jogo produzido por Rafael e Ariel - Engenharia Turma C - Insper 2017/1
+	  Jogo produzido por Rafael Rosenzvaig e Ariel Iglicky - Engenharia Turma C - Insper 2017/1
 """
 #INICIA O JOGO
 while 1:
@@ -268,8 +319,9 @@ if loadSaveOption == "n" or loadSaveOption == "N":
 			time.sleep(2)
 			alunoMecatronica.nome = input("Digite qual será o nome do seu Aluno inicial: ")
 			alunoInicial = alunoMecatronica
+			saveAtual["alunodex"] = ["2"]
 			saveAtual["alunos"] = {}
-			saveAtual["alunos"] = {alunoMecatronica.nome:{"tipo":"alunoMecatronica","lvl":1}}
+			saveAtual["alunos"] = {alunoMecatronica.nome:{"tipo":"alunoMecatronica","lvl":1},"xp":0}
 			saveGeneral[saveName] = saveAtual
 			###COLOCA O ALUNO COM NOME NO SAVE
 			with open("save.json","w") as arquivoSai:
@@ -290,8 +342,9 @@ if loadSaveOption == "n" or loadSaveOption == "N":
 			time.sleep(2)
 			alunoMecanica.nome = input("Digite qual será o nome do seu Aluno inicial: ")
 			alunoInicial = alunoMecanica
+			saveAtual["alunodex"] = ["3"]
 			saveAtual["alunos"] = {}
-			saveAtual["alunos"] = {alunoMecanica.nome:{"tipo":"alunoMecanica","lvl":1}}
+			saveAtual["alunos"] = {alunoMecanica.nome:{"tipo":"alunoMecanica","lvl":1,"xp":0}}
 			saveGeneral[saveName] = saveAtual
 			###COLOCA O ALUNO COM NOME NO SAVE
 			with open("save.json","w") as arquivoSai:
@@ -312,8 +365,9 @@ if loadSaveOption == "n" or loadSaveOption == "N":
 			time.sleep(2)
 			alunoComputacao.nome = input("Digite qual será o nome do seu Aluno inicial: ")
 			alunoInicial = alunoComputacao
+			saveAtual["alunodex"] = ["4"]
 			saveAtual["alunos"] = {}
-			saveAtual["alunos"] = {alunoComputacao.nome:{"tipo":"alunoComputacao","lvl":1}}
+			saveAtual["alunos"] = {alunoComputacao.nome:{"tipo":"alunoComputacao","lvl":1,"xp":0}}
 			saveGeneral[saveName] = saveAtual
 			###COLOCA O ALUNO COM NOME NO SAVE
 			with open("save.json","w") as arquivoSai:
@@ -330,7 +384,7 @@ if loadSaveOption == "n" or loadSaveOption == "N":
 
 else:
 	#O saveAtual JA CARREGA OS VALORES DO SAVE
-	print("Bem-vindo de volta ao jardim do Kanto do Insper!")
+	print("Bem-vindo de volta ao jardim do Kanto do Insper, {}!".format(saveAtual["name"]))
 	time.sleep(3)
 
 
@@ -341,11 +395,17 @@ while 1: #LOOP INFINITO PRINCIPAL DO JOGO
 		print(i)
 	alunoAtual = input("Digite com qual aluno você quer passear: ")
 	while 1: #LOOP DO PASSEAR OU DORMIR
+		with open("save.json") as arquivoEntra:
+			saveGeneral = json.load(arquivoEntra)
+		if loadSaveOption == "s" or loadSaveOption == "S":
+			saveAtual = saveGeneral[chooseSave]
+		else:
+			saveAtual = saveGeneral[saveName]
 		clear()
 		if alunoAtual in saveAtual["alunos"]:	
 			clear()
 			print("Passeando com {}".format(alunoAtual))
-			passearOuDormir = input("Você quer passear (p), dormir (d) ou ver a Alunodex (a) ? ") ###PASSEAR OU DORMIR
+			passearOuDormir = input("Você quer passear (p), dormir (d), ver a Alunodex (a) ou ver os stats de {} (s) ? ".format(alunoAtual)) ###PASSEAR OU DORMIR
 			if passearOuDormir == "d" or passearOuDormir == "D":
 				break
 
@@ -366,13 +426,15 @@ while 1: #LOOP INFINITO PRINCIPAL DO JOGO
 				indexDoOponente = randint(0,len(listaNPC)-1)
 				oponente = listaNPC[indexDoOponente]
 				#CHAMA A FUNÇÃO BATALHAR
-				batalhar(saveAtual["alunos"][alunoAtual]["tipo"],saveAtual["alunos"][alunoAtual]["lvl"],oponente,alunoAtual)
+				resultadoDaBatalha = batalhar(saveAtual["alunos"][alunoAtual]["tipo"],saveAtual["alunos"][alunoAtual]["lvl"],oponente,alunoAtual,saveAtual["alunos"][alunoAtual]["xp"])
+				saveAtual["alunos"][alunoAtual]["xp"] = resultadoDaBatalha[0]
+				saveAtual["alunos"][alunoAtual]["lvl"] = resultadoDaBatalha[1]
 				clear()
 				#CHAMA A FUNÇÃO CHECK DA ALUNODEX
 				#saveAtual["alunodex"] = alunodexCheck(saveAtual["alunodex"],listaNPC,indexDoOponente)
 				if str(indexDoOponente) not in saveAtual["alunodex"]:
 					saveAtual["alunodex"].append(str(indexDoOponente))
-					print("{} foi adicionado a sua Alunodex!".format(listaNPC[indexDoOponente].nome))
+					print("{} foi adicionado à sua Alunodex!".format(listaNPC[indexDoOponente].nome))
 					time.sleep(3)
 				with open("save.json","w") as arquivoSai:
 					json.dump(saveGeneral,arquivoSai)
@@ -382,11 +444,43 @@ while 1: #LOOP INFINITO PRINCIPAL DO JOGO
 				print("Estes são os tipos de aluno que você já econtrou por ai: ") 
 				for k in saveAtual["alunodex"]:
 					print(listaNPC[int(k)].nome)
-				time.sleep(6)
+				wait = input("Aperte ENTER para voltar")
+
+			elif passearOuDormir == "s" or passearOuDormir == "S":
+
+				if saveAtual["alunos"][alunoAtual]["tipo"] == "alunoMecatronica":
+					clear()
+					print("Stats de {}".format(alunoAtual))
+					print("Ataque: {}".format(int(alunoMecatronica.ataque*(1+(0.5*saveAtual["alunos"][alunoAtual]["lvl"])-0.5))))
+					print("Defesa: {}".format(int(alunoMecatronica.defesa*(1+(0.5*saveAtual["alunos"][alunoAtual]["lvl"])-0.5))))
+					print("Vida: {}".format(int(alunoMecatronica.vida*(1+(0.5*saveAtual["alunos"][alunoAtual]["lvl"])-0.5))))
+					print("Level: {}".format(saveAtual["alunos"][alunoAtual]["lvl"]))
+					print("XP: {}".format(saveAtual["alunos"][alunoAtual]["xp"]))
+					wait = input("Aperte ENTER para voltar")
+
+				elif saveAtual["alunos"][alunoAtual]["tipo"] == "alunoMecanica":
+					clear()
+					print("Stats de {}".format(alunoAtual))
+					print("Ataque: {}".format(int(alunoMecanica.ataque*(1+(0.5*saveAtual["alunos"][alunoAtual]["lvl"])-0.5))))
+					print("Defesa: {}".format(int(alunoMecanica.defesa*(1+(0.5*saveAtual["alunos"][alunoAtual]["lvl"])-0.5))))
+					print("Vida: {}".format(int(alunoMecanica.vida*(1+(0.5*saveAtual["alunos"][alunoAtual]["lvl"])-0.5))))
+					print("Level: {}".format(saveAtual["alunos"][alunoAtual]["lvl"]))
+					print("XP: {}".format(saveAtual["alunos"][alunoAtual]["xp"]))
+					wait = input("Aperte ENTER para voltar")
+
+				elif saveAtual["alunos"][alunoAtual]["tipo"] == "alunoComputacao":
+					clear()
+					print("Stats de {}".format(alunoAtual))
+					print("Ataque: {}".format(int(alunoComputacao.ataque*(1+(0.5*saveAtual["alunos"][alunoAtual]["lvl"])-0.5))))
+					print("Defesa: {}".format(int(alunoComputacao.defesa*(1+(0.5*saveAtual["alunos"][alunoAtual]["lvl"])-0.5))))
+					print("Vida: {}".format(int(alunoComputacao.vida*(1+(0.5*saveAtual["alunos"][alunoAtual]["lvl"])-0.5))))
+					print("Level: {}".format(saveAtual["alunos"][alunoAtual]["lvl"]))
+					print("XP: {}".format(saveAtual["alunos"][alunoAtual]["xp"]))
+					wait = input("Aperte ENTER para voltar")
 
 			else:
-				print("Você precisa digitar (p) para passear ou (d) para dormir!")
-				time.sleep(3)
+				print("Você precisa digitar (p) para passear, (d) para dormir, (a) para ver a Alunodex ou (s) para ver os stats de {}".format(alunoAtual))
+				time.sleep(5)
 		else:
 			print("Escolha um Aluno que está na sua lista!")
 			time.sleep(2)
